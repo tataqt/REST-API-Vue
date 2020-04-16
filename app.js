@@ -2,7 +2,14 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
+const CONTACTS = [
+    { id: 1, name: "tata", value: '3801002030', marked: false }
+]
 
+//GET
+app.get('/api/contacts', (req, res) => {
+    res.status(200).json(CONTACTS);
+})
 
 app.use(express.static(path.resolve(__dirname, 'client')));
 
