@@ -1,26 +1,46 @@
-const express = require('express');
-const path = require('path');
-const { v4 } = require('uuid');
-const app = express();
+const express = require('express')
+const path = require('path')
+const {v4} = require('uuid')
+const app = express()
 
-const CONTACTS = [
-    { id: v4(), name: "tata", value: '3801002030', marked: false }
+let CONTACTS = [
+  {id: v4(), name: 'Tata', value: '+38(050)411-22-33', marked: false}
 ]
 
-//GET
+app.use(express.json())
+
+// GET
 app.get('/api/contacts', (req, res) => {
-    res.status(200).json(CONTACTS);
+  setTimeout(() => {
+    res.status(200).json(CONTACTS)
+  }, 1000)
 })
 
-//POST
+// POST
 app.post('/api/contacts', (req, res) => {
-    res.status(200).json(CONTACTS);
+  const contact = {...req.body, id: v4(), marked: false}
+  CONTACTS.push(contact)
+  res.status(201).json(contact)
 })
 
-app.use(express.static(path.resolve(__dirname, 'client')));
+// DELETE
+app.delete('/api/contacts/:id', (req, res) => {
+  CONTACTS = CONTACTS.filter(c => c.id !== req.params.id)
+  res.status(200).json({message: 'Контакт был удален'})
+})
+
+// PUT
+app.put('/api/contacts/:id', (req, res) => {
+  const idx = CONTACTS.findIndex(c => c.id === req.params.id)
+  CONTACTS[idx] = req.body
+  res.json(CONTACTS[idx])
+})
+
+
+app.use(express.static(path.resolve(__dirname, 'client')))
 
 app.get('*', (req, res) => {
-    res.res.sendFile(path.resolve(__dirname, 'client', 'index.html'));
-});
+  res.sendFile(path.resolve(__dirname, 'client', 'index.html'))
+})
 
 app.listen(3000, () => console.log('Server has been started on port 3000...'))

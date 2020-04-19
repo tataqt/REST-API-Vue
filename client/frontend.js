@@ -28,11 +28,15 @@ new Vue({
         }
     },
     methods: {
-        createContact() {
-            const { ...contact } = this.form;
-            this.contacts.push({ ...contact, id: Date.now(), marked: false });
-            this.form.name = this.form.value = '';
-        },
+        async createContact() {
+            const {...contact} = this.form
+      
+            const newContact = await request('/api/contacts', 'POST', contact)
+      
+            this.contacts.push(newContact)
+      
+            this.form.name = this.form.value = ''
+          },
         markContact(id) {
             const contact = this.contacts.find(c => c.id === id)
             contact.marked = true;
@@ -51,11 +55,11 @@ new Vue({
 async function request(url, method = 'GET', data = null) {
     try {
         const headers = {}
-        let body;
+        let body
 
         if (data) {
-            headers['Content-Type'] = 'application/json';
-            body = JSON.stringify(data);
+            headers['Content-Type'] = 'application/json'
+            body = JSON.stringify(data)
         }
 
         const response = await fetch(url, {
@@ -63,8 +67,8 @@ async function request(url, method = 'GET', data = null) {
             headers,
             body
         })
-        return await response.json();
+        return await response.json()
     } catch (e) {
-        console.warn('Error:', e.message);
+        console.warn('Error:', e.message)
     }
 }
